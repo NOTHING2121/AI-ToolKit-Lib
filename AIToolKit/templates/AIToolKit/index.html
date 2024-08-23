@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Toolkit Lib</title>
+    <style>
+        /* 添加简单的样式来控制整体居中 */
+        body {
+            text-align: center; /* 文本居中显示 */
+            font-size: larger;
+            margin-top: 120px; /* 从页面顶部留一定空隙 */
+        }
+        .button-container {
+            display: inline-block; /* 将按钮容器设置为内联块，使得两个按钮可以横向排列 */
+            margin: 20px 20px; /* 调整按钮之间的间距 */
+        }
+        .predict-button {
+            font-size: 20px; /* 增大按钮文字大小 */
+            padding: 10px 20px; /* 增大按钮内边距，使按钮本身更大 */
+            background-color: #FFA07A; /* 浅橙色 */
+            color: white; /* 文字颜色白色 */
+            border: none; /* 无边框 */
+            cursor: pointer; /* 鼠标悬停时显示指针 */
+        }
+        .train-button {
+            font-size: 20px; /* 增大按钮文字大小 */
+            padding: 10px 20px; /* 增大按钮内边距，使按钮本身更大 */
+            background-color: #87CEEB; /* 天蓝色 */
+            color: white; /* 文字颜色白色 */
+            border: none; /* 无边框 */
+            cursor: pointer; /* 鼠标悬停时显示指针 */
+        }
+    </style>
+</head>
+<body>
+    <h1>AI Toolkit Lib</h1>
+    <div>
+        <div class="button-container">
+            <button class="predict-button" onclick="window.location.href='{% url 'AIToolKit:predict_mode' %}'">Predict Mode</button>
+        </div>
+        <div class="button-container">
+            <button class="train-button" onclick="window.location.href='{% url 'AIToolKit:train_mode' %}'">Train Mode</button>
+        </div>
+    </div>
+</body>
+</html>
+

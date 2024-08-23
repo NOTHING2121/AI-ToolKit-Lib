@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Load Image Dataset Train</title>
+</head>
+<body>
+    <h1>Load Image Dataset Training</h1>
+    <form method="post" action="{% url 'AIToolKit:load_image_dataset_train' %}">
+        {% csrf_token %}
+        <label for="dataset_type">Choose a dataset:</label>
+        <select name="dataset_type" id="dataset_type">
+            <option value="fashionMNIST">fashionMNIST</option>
+            <option value="mnist">mnist</option>
+            <option value="cifar10">cifar10</option>
+        </select>
+        <br>
+        <label for="model_type">Choose a model:</label>
+        <select name="model_type" id="model_type">
+            <option value="ResNet">ResNet</option>
+            <option value="MobileNet">MobileNet</option>
+            <option value="AlexNet">AlexNet</option>
+            <option value="MyNet">MyNet</option>
+        </select>
+        <br>
+        <button type="submit" name="action" value="train">Train</button>
+        <button type="submit" name="action" value="save">Save Model</button>
+    </form>
+</body>
+</html>

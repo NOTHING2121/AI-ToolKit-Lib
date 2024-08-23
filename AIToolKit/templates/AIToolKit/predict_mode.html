@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Predict Mode</title>
+    <style>
+       body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            width: 90%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            grid-template-areas:
+                "title title title"
+                "input output log";
+        }
+        .title {
+            grid-area: title;
+            align-self: start;
+            margin: 0;
+            padding: 20px 20px 0 0; /* Adjust padding as needed */
+            font-size: 30px;
+            text-align: left; /* Align text to the left */
+            font-weight: bold; /* Make the font bold */
+            color: black; /* Set the font color to black */
+        }
+        .panel {
+            padding: 20px;
+            border: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+        }
+        label, input, select, textarea, button {
+            margin-bottom: 10px;
+            width: 100%;
+        }
+        textarea {
+            height: 100px;
+        }
+        #output, #log {
+            height: 150px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">Predict Mode</div>
+        <div class="panel" id="inputPanel">
+            <h2>输入控制</h2>
+            <form id="prediction-form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label for="task">选择任务:</label>
+                <select id="task" name="task" onchange="updateModelOptions()">
+                    <option value="图像分割">图像分割</option>
+                    <option value="图像识别">图像识别</option>
+                    <option value="文本分析">文本分析</option>
+                </select>
+                <label for="model">选择模型:</label>
+                <select id="model" name="model">
+                    <!-- Options filled by updateModelOptions function -->
+                </select>
+                <label for="textInput">输入文本:</label>
+                <textarea id="textInput" name="text_input"></textarea>
+                <label for="fileInput">上传文件:</label>
+                <input type="file" id="fileInput" name="image_file">
+                <button type="button" onclick="submitForm()">提交</button>
+            </form>
+        </div>
+        <div class="panel" id="outputPanel">
+            <h2>输出结果</h2>
+            <img id="output-image" src="" style="max-width: 100%; display: none;"> <!-- 用于显示图片的img标签 -->
+            <textarea id="output" readonly style="display: none;"></textarea> <!-- 初始状态隐藏，用于文本输出 -->
+        </div>
+        <div class="panel" id="logPanel">
+            <h2>日志</h2>
+            <textarea id="log" readonly></textarea>
+        </div>
+
+    </div>
+
+    <script>
+        function updateModelOptions() {
+            const taskSelect = document.getElementById('task');
+            const modelSelect = document.getElementById('model');
+            const task = taskSelect.value;
+
+            let options = [];
+            if (task === '图像分割') {
+                options = ['YoloV8'];
+            } else if (task === '图像识别') {
+                options = ['ResNet50', 'MobileNet'];
+            } else if (task === '文本分析') {
+                options = ['PatternAnalyzer', 'NaiveBayesAnalyzer'];
+            }
+
+            modelSelect.innerHTML = '';
+            options.forEach(function(model) {
+                const option = document.createElement('option');
+                option.value = model;
+                option.text = model;
+                modelSelect.appendChild(option);
+            });
+        }
+    function submitForm() {
+    const form = document.getElementById('prediction-form');
+    const formData = new FormData(form);
+
+    fetch('{% url "AIToolKit:predict" %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const outputImage = document.getElementById('output-image');
+        const outputText = document.getElementById('output');
+        const logArea = document.getElementById('log');
+
+        if (data.logs) {
+            logArea.value = data.logs.join('\n');
+        }
+
+        if (data.image_url) {
+            outputImage.src = data.image_url;
+            outputImage.style.display = 'block';
+            outputText.style.display = 'none';
+        } else if (data.result) {
+            outputText.textContent = data.result;
+            outputText.style.display = 'block';
+            outputImage.style.display = 'none';
+        } else {
+            outputText.textContent = 'Error: ' + data.error;
+            outputText.style.display = 'block';
+            outputImage.style.display = 'none';
+        }
+    })
+    .catch(error => {
+        console.error('Fetch Error:', error);
+        document.getElementById('log').value = 'Fetch Error: ' + error.toString();
+    });
+}
+
+
+    function updateLogArea(logs) {
+        const logArea = document.getElementById('log');
+        logArea.value = logs.join('\n');
+}
+
+
+        // Initialize model options when the page loads
+        updateModelOptions();
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*~
+.DS_Store
+.idea/
+*.sqlite3
+*.pyo
+.env
+media/

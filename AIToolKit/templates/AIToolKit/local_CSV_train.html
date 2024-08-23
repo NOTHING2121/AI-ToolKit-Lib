@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Load Image Dataset Train</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('trainForm');
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();  // 阻止表单默认提交行为
+                const formData = new FormData(form);
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': formData.get('csrfmiddlewaretoken'),  // 确保携带CSRF token
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('result').textContent = `Train Accuracy: ${data.train_accuracy}, Test Accuracy: ${data.test_accuracy}`;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('result').textContent = 'Error occurred while processing the form.';
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Load Image Dataset Training</h1>
+    <form id="trainForm" action="{% url 'AIToolKit:local_CSVdataset_train' %}" method="post">
+        {% csrf_token %}
+        <label for="model_type">Choose a model:</label>
+        <select name="model_type" id="model_type">
+            <option value="XGBoostModel">XGBoostModel</option>
+            <option value="Lightgbm">Lightgbm</option>
+            <option value="RandomForestModel">RandomForestModel</option>
+        </select>
+        <br>
+        <label for="filepath">File path:</label>
+        <input type="text" id="filepath" name="filepath">
+        <br>
+        <label for="features">Features (comma-separated):</label>
+        <input type="text" id="features" name="features">
+        <br>
+        <label for="target">Target:</label>
+        <input type="text" id="target" name="target">
+        <br>
+        <button type="submit">Train</button>
+    </form>
+    <p id="result"></p>
+</body>
+</html>
